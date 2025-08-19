@@ -1,0 +1,26 @@
+PDF书签生成器 - 应用使用说明
+=====================================
+
+🎯 应用已成功打包！
+
+📁 文件说明:
+- dist/PDF书签生成器 (macOS可执行文件)
+- 启动PDF书签生成器.sh (启动脚本)
+
+🚀 使用方法:
+1. 双击启动脚本或直接运行可执行文件
+2. 确保系统已安装Ghostscript: brew install ghostscript
+3. 按照界面提示操作
+
+⚠️  注意事项:
+- 首次运行可能需要几秒钟启动
+- 确保有足够的磁盘空间
+- 如果遇到问题，检查Ghostscript安装
+
+🔧 系统要求:
+- macOS 10.10+
+- Ghostscript (必需): brew install ghostscript
+- 至少100MB可用磁盘空间
+
+📞 技术支持:
+如有问题，请查看项目README.md或提交Issue

@@ -1,0 +1,14 @@
+# PDF书签生成器依赖
+# 注意：此应用需要系统安装Ghostscript
+
+# 核心依赖（Python标准库，无需安装）
+# tkinter - GUI界面
+# subprocess - 执行外部命令
+# pathlib - 路径处理
+# tempfile - 临时文件
+# re - 正则表达式
+
+# 可选依赖（用于开发）
+# pytest - 测试框架
+# black - 代码格式化
+# flake8 - 代码检查 
