@@ -13,6 +13,11 @@
 - **[图标集成指南](ICON_INTEGRATION.md)** - 应用图标系统的配置和使用
 - **[自动发布指南](AUTO_RELEASE_GUIDE.md)** - GitHub Actions自动发布流程
 
+## 📋 发布管理
+
+- **[发布说明模板](releases/RELEASE_NOTES_TEMPLATE.md)** - 标准发布说明模板
+- **[版本发布记录](releases/)** - 各版本发布说明文档
+
 ## 📖 使用说明
 
 - **应用使用说明.txt** - 基本使用方法和功能介绍

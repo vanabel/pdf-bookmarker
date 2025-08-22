@@ -19,8 +19,10 @@
     auto-release.yml          # GitHub Actions工作流
 scripts/
   create_release.sh          # 自动发布脚本
-RELEASE_NOTES_TEMPLATE.md    # 发布说明模板
-RELEASE_NOTES_v1.2.0.md     # 具体版本发布说明
+docs/
+  releases/
+    RELEASE_NOTES_TEMPLATE.md    # 发布说明模板
+    RELEASE_NOTES_v1.2.0.md     # 具体版本发布说明
 ```
 
 ### 2. 权限要求
@@ -53,11 +55,11 @@ RELEASE_NOTES_v1.2.0.md     # 具体版本发布说明
 
 ```bash
 # 1. 创建发布说明文件
-cp RELEASE_NOTES_TEMPLATE.md RELEASE_NOTES_v1.3.0.md
+cp docs/releases/RELEASE_NOTES_TEMPLATE.md docs/releases/RELEASE_NOTES_v1.3.0.md
 # 编辑发布说明文件
 
 # 2. 提交发布说明
-git add RELEASE_NOTES_v1.3.0.md
+git add docs/releases/RELEASE_NOTES_v1.3.0.md
 git commit -m "📝 添加 v1.3.0 版本发布说明"
 
 # 3. 创建标签
@@ -150,7 +152,7 @@ https://github.com/<用户名>/<仓库名>/releases
 pyinstaller PDF书签生成器.spec
 
 # 3. 检查发布说明文件
-cat RELEASE_NOTES_v1.3.0.md
+cat docs/releases/RELEASE_NOTES_v1.3.0.md
 
 # 4. 验证标签
 git tag -l | grep v1.3.0

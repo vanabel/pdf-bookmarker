@@ -66,12 +66,12 @@ if [ -z "$RELEASE_NOTES_FILE" ]; then
         echo -e "${YELLOW}未找到发布说明文件，从模板生成...${NC}"
         
         # 从模板生成发布说明
-        if [ -f "RELEASE_NOTES_TEMPLATE.md" ]; then
+        if [ -f "docs/releases/RELEASE_NOTES_TEMPLATE.md" ]; then
             CURRENT_DATE=$(date +"%Y年%m月%d日")
-            sed "s/{{VERSION}}/$VERSION/g; s/{{DATE}}/$CURRENT_DATE/g" RELEASE_NOTES_TEMPLATE.md > "$RELEASE_NOTES_FILE"
+            sed "s/{{VERSION}}/$VERSION/g; s/{{DATE}}/$CURRENT_DATE/g" docs/releases/RELEASE_NOTES_TEMPLATE.md > "$RELEASE_NOTES_FILE"
             echo -e "${GREEN}✓ 已生成发布说明文件: $RELEASE_NOTES_FILE${NC}"
         else
-            echo -e "${RED}错误: 未找到模板文件 RELEASE_NOTES_TEMPLATE.md${NC}"
+            echo -e "${RED}错误: 未找到模板文件 docs/releases/RELEASE_NOTES_TEMPLATE.md${NC}"
             exit 1
         fi
     fi
