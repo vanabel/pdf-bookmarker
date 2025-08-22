@@ -96,14 +96,37 @@ jobs:
     - name: Get release notes
       id: get_release_notes
       run: |
+        echo "🔍 查找发布说明文件..."
+        echo "版本: ${GITHUB_REF_NAME}"
+        echo "查找文件: docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md"
+        
         if [ -f "docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md" ]; then
+          echo "✅ 找到发布说明文件"
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
           cat "docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           echo "📋 使用发布说明文件: docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md"
         else
-          echo "RELEASE_NOTES=Release ${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
           echo "⚠️ 未找到发布说明文件，使用默认说明"
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "# PDF书签生成器 ${GITHUB_REF_NAME} 发布说明" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "## 🎉 新版本发布" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "**版本**: ${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          echo "**发布日期**: $(date +"%Y年%m月%d日")" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "## 📝 最新提交信息" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "**最后提交**: \`$(git log -1 --pretty=format:'%h')\`" >> $GITHUB_OUTPUT
+          echo "**提交时间**: $(git log -1 --pretty=format:'%cd' --date=format:'%Y年%m月%d日 %H:%M:%S')" >> $GITHUB_OUTPUT
+          echo "**提交者**: $(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "**提交消息**:">> $GITHUB_OUTPUT
+          echo "\`\`\`" >> $GITHUB_OUTPUT
+          git log -1 --pretty=format:'%B' >> $GITHUB_OUTPUT
+          echo "\`\`\`" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         fi
         
     - name: Create Release
