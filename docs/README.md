@@ -15,6 +15,9 @@
 - **[清除书签功能说明](CLEAR_BOOKMARKS_FEATURE.md)** - 清除PDF原始书签功能详细说明
 - **[调试模式说明](DEBUG_MODE_EXPLANATION.md)** - 调试模式用途和使用方法
 
+### 🎨 开发与集成
+- **[图标集成指南](ICON_INTEGRATION.md)** - 应用图标集成和使用说明
+
 ## 🎯 使用建议
 
 1. **新用户**：从[新功能总结](NEW_FEATURE_SUMMARY.md)开始了解功能

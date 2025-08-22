@@ -7,6 +7,13 @@ import tempfile
 import re
 from pathlib import Path
 
+# 导入图标配置
+try:
+    from assets.icons.icon_config import icon_config
+except ImportError:
+    # 如果图标配置不可用，创建默认配置
+    icon_config = None
+
 class PDFBookmarkerApp:
     def __init__(self, root):
         self.root = root
@@ -14,11 +21,8 @@ class PDFBookmarkerApp:
         self.root.geometry("1200x800")  # 增加窗口大小
         self.root.minsize(1000, 700)    # 增加最小尺寸
         
-        # 设置窗口图标（如果有的话）
-        try:
-            self.root.iconbitmap('icon.ico')
-        except:
-            pass
+        # 设置窗口图标
+        self.setup_window_icon()
         
         # 设置样式和主题
         self.setup_styles()
@@ -65,6 +69,32 @@ class PDFBookmarkerApp:
         # 修复复选框样式
         style.configure('TCheckbutton', font=('Arial', 12))
         
+    def setup_window_icon(self):
+        """设置窗口图标"""
+        if icon_config:
+            try:
+                # 根据平台选择合适的图标
+                icon_path = icon_config.get_platform_icon()
+                if icon_path:
+                    if sys.platform == "darwin":  # macOS
+                        # macOS使用PhotoImage
+                        icon_image = tk.PhotoImage(file=icon_path)
+                        self.root.iconphoto(True, icon_image)
+                    elif sys.platform == "win32":  # Windows
+                        # Windows使用iconbitmap
+                        self.root.iconbitmap(icon_path)
+                    else:  # Linux
+                        # Linux使用PhotoImage
+                        icon_image = tk.PhotoImage(file=icon_path)
+                        self.root.iconphoto(True, icon_image)
+                    print(f"✅ 窗口图标设置成功: {icon_path}")
+                else:
+                    print("⚠️ 未找到合适的图标文件")
+            except Exception as e:
+                print(f"❌ 设置窗口图标失败: {e}")
+        else:
+            print("⚠️ 图标配置不可用，使用默认图标")
+    
     def center_window(self):
         """将窗口居中显示"""
         self.root.update_idletasks()
