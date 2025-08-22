@@ -56,7 +56,7 @@ exe = EXE(
     console=False,  # 无控制台窗口
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
+    target_arch=None,  # 让PyInstaller自动检测目标架构
     codesign_identity=None,
     entitlements_file=None,
 )
@@ -87,11 +87,31 @@ app = BUNDLE(
                 'CFBundleTypeExtensions': ['pdf'],
                 'CFBundleTypeRole': 'Viewer',
                 'CFBundleTypeIconFile': 'icon_256.png',
+                'CFBundleTypeOSTypes': ['PDF '],
             }
         ],
         'NSHighResolutionCapable': True,  # 支持高分辨率显示
-        'LSMinimumSystemVersion': '10.10.0',  # 最低系统要求
+        'LSMinimumSystemVersion': '10.15.0',  # 最低系统要求Catalina
         'LSApplicationCategoryType': 'public.app-category.productivity',
         'NSPrincipalClass': 'NSApplication',
+        # 添加架构支持信息
+        'LSArchitecturePriority': ['x86_64'],  # Intel Mac支持
+        'CFBundleSupportedPlatforms': ['MacOSX'],
+        # 添加安全相关配置
+        'NSAppleEventsUsageDescription': 'PDF书签生成器需要访问文件系统来读取和创建PDF文件',
+        'NSCameraUsageDescription': 'PDF书签生成器不需要相机权限',
+        'NSMicrophoneUsageDescription': 'PDF书签生成器不需要麦克风权限',
+        'NSLocationUsageDescription': 'PDF书签生成器不需要位置权限',
+        # 添加沙盒配置
+        'LSApplicationCategoryType': 'public.app-category.productivity',
+        'CFBundleDocumentTypes': [
+            {
+                'CFBundleTypeName': 'PDF Document',
+                'CFBundleTypeExtensions': ['pdf'],
+                'CFBundleTypeRole': 'Viewer',
+                'CFBundleTypeIconFile': 'icon_256.png',
+                'CFBundleTypeOSTypes': ['PDF '],
+            }
+        ],
     },
 )
