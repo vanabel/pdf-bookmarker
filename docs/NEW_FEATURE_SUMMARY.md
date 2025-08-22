@@ -194,3 +194,83 @@ qpdf --empty --pages input.pdf 1-z -- output.pdf
 4. **扩展了应用场景**: 支持更多专业和商业用途
 
 这个功能与现有的书签生成功能完美配合，让PDF书签生成器成为一个功能完整、专业可靠的PDF书签处理工具。
+
+---
+
+## 📚 Demo目录 - 示例与学习资源
+
+### 🎯 目录组织
+PDF书签生成器提供了完整的示例集合，帮助用户快速学习和测试所有功能：
+
+```
+demo/
+├── README.md                  # 📖 详细的示例说明文档
+├── load_examples.py           # 🚀 示例加载器脚本
+├── simple_bookmarks.txt       # 📚 简单书签示例
+├── dots_format_bookmarks.txt  # 📊 点线格式示例
+├── dynamic_offset_bookmarks.txt # 📝 动态偏移示例
+├── full_bookmarks.txt         # 📖 完整书签示例（15章节）
+└── *.pdf                      # 📄 示例PDF文件
+```
+
+### 🚀 智能示例加载器
+- **文件列表**: 自动检测和显示所有示例文件
+- **内容预览**: 快速查看示例文件内容
+- **剪贴板支持**: 一键复制示例到剪贴板
+- **文件状态**: 显示文件存在性和大小信息
+
+### 📖 示例特点
+
+#### **simple_bookmarks.txt**
+- 基础章节结构，适合功能验证
+- 无特殊格式要求，适合初学者
+
+#### **dots_format_bookmarks.txt**
+- 点线分隔格式，演示自动识别功能
+- 真实世界格式，展示实际应用场景
+
+#### **dynamic_offset_bookmarks.txt**
+- HTML注释风格偏移，展示动态页码调整
+- 高级功能演示，适合高级用户
+
+#### **full_bookmarks.txt**
+- 完整学术书籍目录，15个章节结构
+- 包含负页码和动态偏移，复杂的页码分布（-7到445）
+
+### 🎯 使用方法
+
+#### 快速开始
+```bash
+# 进入demo目录
+cd demo
+
+# 查看所有示例
+python load_examples.py
+
+# 查看简单示例内容
+python load_examples.py simple_bookmarks.txt
+
+# 复制完整示例到剪贴板
+python load_examples.py full_bookmarks.txt --copy
+```
+
+#### 在主应用中使用
+1. 运行主应用：`python pdf_bookmarker_gs.py`
+2. 使用示例加载器复制示例内容
+3. 在主应用中粘贴到目录文本区域
+4. 点击"预览书签"检查结果
+5. 生成带书签的PDF
+
+### 🌟 学习价值
+- **循序渐进**: 从简单到复杂的完整学习路径
+- **功能覆盖**: 涵盖所有核心功能的示例
+- **实际应用**: 基于真实学术场景的示例
+- **快速上手**: 帮助用户快速掌握应用功能
+
+---
+
+## 🔗 相关文档
+
+- [安装指南](INSTALLATION_GUIDE.md) - 依赖工具安装说明
+- [清除书签功能](CLEAR_BOOKMARKS_FEATURE.md) - 详细功能说明
+- [调试模式说明](DEBUG_MODE_EXPLANATION.md) - 调试功能使用指南

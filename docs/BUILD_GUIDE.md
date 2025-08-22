@@ -1,8 +1,13 @@
-# 🚀 PDF书签生成器 - 应用打包指南
+# 🚀 应用构建指南 - 打包与分发
+
+本指南将帮助您将PDF书签生成器打包成可执行文件，让用户无需安装Python就能直接运行应用。
 
 ## 📋 概述
 
-本指南将帮助你将PDF书签生成器打包成可执行文件，让用户无需安装Python就能直接运行应用。
+PDF书签生成器支持跨平台打包，可以生成：
+- **macOS**: `.app` 应用包和可执行文件
+- **Windows**: `.exe` 可执行文件
+- **Linux**: 可执行文件
 
 ## 🎯 支持的平台
 
@@ -53,7 +58,7 @@ python build_app.py
 
 ## 📁 打包结果
 
-打包成功后，你将得到：
+打包成功后，您将得到：
 
 ```
 PDF_Bookmarker/
@@ -132,7 +137,7 @@ zip -r PDF书签生成器_macOS.zip *
 
 ### 2. 用户安装要求
 - **系统要求**: Windows 7+ / macOS 10.10+ / Linux (Ubuntu 16.04+)
-- **必需软件**: Ghostscript
+- **必需软件**: Ghostscript和qpdf（详见[安装指南](INSTALLATION_GUIDE.md)）
 - **磁盘空间**: 至少100MB可用空间
 
 ## 🔧 故障排除
@@ -151,7 +156,7 @@ venv\Scripts\activate     # Windows
 ```
 
 #### 3. 应用启动失败
-- 检查Ghostscript是否正确安装
+- 检查Ghostscript和qpdf是否正确安装
 - 查看应用使用说明.txt
 - 尝试直接运行可执行文件
 
@@ -212,4 +217,14 @@ pyinstaller --onedir --windowed --name="PDF书签生成器" pdf_bookmarker_gs.py
 
 ---
 
-**恭喜！** 🎉 你现在已经成功将PDF书签生成器打包成可执行文件，用户无需安装Python就能直接使用！ 
+**恭喜！** 🎉 您现在已经成功将PDF书签生成器打包成可执行文件，用户无需安装Python就能直接使用！
+
+## 🔗 相关链接
+
+- [安装指南](INSTALLATION_GUIDE.md) - 依赖工具安装说明
+- [新功能总结](NEW_FEATURE_SUMMARY.md) - 应用功能概览
+- [主项目README](../README.md) - 项目概览和快速开始
+
+---
+
+*最后更新：2024年8月22日*

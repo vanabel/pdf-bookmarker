@@ -6,6 +6,7 @@
 
 ### 🚀 快速开始
 - **[新功能总结](NEW_FEATURE_SUMMARY.md)** - 最新功能概览和特性说明
+- **[应用构建指南](BUILD_GUIDE.md)** - 应用打包和分发说明
 
 ### 🔧 安装指南
 - **[完整安装指南](INSTALLATION_GUIDE.md)** - 各平台Ghostscript和qpdf安装详细步骤
