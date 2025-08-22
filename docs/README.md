@@ -8,8 +8,7 @@
 - **[新功能总结](NEW_FEATURE_SUMMARY.md)** - 最新功能概览和特性说明
 
 ### 🔧 安装指南
-- **[Ghostscript安装指南](GHOSTSCRIPT_INSTALLATION.md)** - 各平台Ghostscript安装详细步骤
-- **[qpdf安装指南](QPDF_INSTALLATION.md)** - 各平台qpdf安装详细步骤
+- **[完整安装指南](INSTALLATION_GUIDE.md)** - 各平台Ghostscript和qpdf安装详细步骤
 
 ### 📋 功能说明
 - **[清除书签功能说明](CLEAR_BOOKMARKS_FEATURE.md)** - 清除PDF原始书签功能详细说明

@@ -179,9 +179,8 @@ This application requires two external tools for full functionality:
 - **Ghostscript** - For PDF bookmark generation
 - **qpdf** - For clearing original PDF bookmarks
 
-📖 **Detailed installation guides are available in the [docs/](docs/) directory:**
-- [Ghostscript Installation Guide](docs/GHOSTSCRIPT_INSTALLATION.md)
-- [qpdf Installation Guide](docs/QPDF_INSTALLATION.md)
+📖 **Detailed installation guide is available in the [docs/](docs/) directory:**
+- [Complete Installation Guide](docs/INSTALLATION_GUIDE.md)
 
 #### Quick Installation Commands
 
