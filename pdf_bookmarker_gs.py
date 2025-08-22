@@ -11,8 +11,8 @@ class PDFBookmarkerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("PDF书签生成器 - 使用Ghostscript")
-        self.root.geometry("1000x700")
-        self.root.minsize(900, 600)
+        self.root.geometry("1200x800")  # 增加窗口大小
+        self.root.minsize(1000, 700)    # 增加最小尺寸
         
         # 设置窗口图标（如果有的话）
         try:
@@ -40,35 +40,30 @@ class PDFBookmarkerApp:
         else:
             style.theme_use('default')
         
-        # 自定义样式
-        style.configure('Title.TLabel', font=('Arial', 16, 'bold'), foreground='#2c3e50')
-        style.configure('Header.TLabel', font=('Arial', 12, 'bold'), foreground='#34495e')
-        style.configure('Info.TLabel', font=('Arial', 10), foreground='#7f8c8d')
+        # 自定义样式 - 增加字体大小
+        style.configure('Title.TLabel', font=('Arial', 18, 'bold'), foreground='#2c3e50')
+        style.configure('Header.TLabel', font=('Arial', 14, 'bold'), foreground='#34495e')
+        style.configure('Info.TLabel', font=('Arial', 12), foreground='#7f8c8d')
         
-        # 按钮样式
+        # 按钮样式 - 使用更简单的样式确保可见性
         style.configure('Primary.TButton', 
-                       font=('Arial', 10, 'bold'),
-                       background='#3498db',
-                       foreground='white')
+                       font=('Arial', 12, 'bold'))
         
         style.configure('Success.TButton',
-                       font=('Arial', 10, 'bold'),
-                       background='#27ae60',
-                       foreground='white')
+                       font=('Arial', 12, 'bold'))
         
         style.configure('Warning.TButton',
-                       font=('Arial', 10, 'bold'),
-                       background='#f39c12',
-                       foreground='white')
+                       font=('Arial', 12, 'bold'))
         
         style.configure('Danger.TButton',
-                       font=('Arial', 10, 'bold'),
-                       background='#e74c3c',
-                       foreground='white')
+                       font=('Arial', 12, 'bold'))
         
         # 框架样式
         style.configure('Card.TFrame', relief='raised', borderwidth=1)
         style.configure('Info.TFrame', relief='sunken', borderwidth=1)
+        
+        # 修复复选框样式
+        style.configure('TCheckbutton', font=('Arial', 12))
         
     def center_window(self):
         """将窗口居中显示"""
@@ -104,8 +99,17 @@ class PDFBookmarkerApp:
         pdf_label.grid(row=0, column=0, sticky=tk.W, pady=(0, 10))
         
         self.pdf_path_var = tk.StringVar()
-        pdf_entry = ttk.Entry(file_frame, textvariable=self.pdf_path_var, font=('Arial', 10))
-        pdf_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(10, 10), pady=(0, 10))
+        self.pdf_entry = ttk.Entry(file_frame, textvariable=self.pdf_path_var, font=('Arial', 12))
+        self.pdf_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(10, 10), pady=(0, 10))
+        
+        # 设置占位符文本和状态
+        self.placeholder_text = "/Users/vanabel/Zotero/storage/RIPGDEB6/DonaldsonKronheimer_1990_The_geometry_of_four-manifolds.pdf"
+        self.is_placeholder = True
+        self.setup_placeholder()
+        
+        # 启用粘贴功能
+        self.pdf_entry.bind('<Control-v>', self.paste_pdf_path)
+        self.pdf_entry.bind('<Command-v>', self.paste_pdf_path)  # macOS支持
         
         browse_btn = ttk.Button(file_frame, text="🔍 浏览", command=self.browse_pdf, style='Primary.TButton')
         browse_btn.grid(row=0, column=2, pady=(0, 10))
@@ -127,15 +131,21 @@ class PDFBookmarkerApp:
         ttk.Label(offset_desc_frame, text="书签第1页对应PDF第", style='Info.TLabel').pack(side=tk.LEFT)
         self.offset_var = tk.StringVar(value="1")
         offset_spin = ttk.Spinbox(offset_desc_frame, from_=1, to=9999, textvariable=self.offset_var, 
-                                 width=8, font=('Arial', 10))
+                                 width=8, font=('Arial', 12))
         offset_spin.pack(side=tk.LEFT, padx=(5, 5))
         ttk.Label(offset_desc_frame, text="页", style='Info.TLabel').pack(side=tk.LEFT)
         
         # 调试模式开关
         self.debug_var = tk.BooleanVar(value=False)
         debug_check = ttk.Checkbutton(settings_frame, text="🐛 调试模式", 
-                                     variable=self.debug_var, style='Info.TLabel')
+                                     variable=self.debug_var)
         debug_check.grid(row=0, column=2, padx=(30, 0), pady=(0, 10))
+        
+        # 调试模式说明
+        debug_desc = ttk.Label(settings_frame, 
+                              text="(启用后会在控制台显示详细执行信息，帮助排查问题)", 
+                              style='Info.TLabel')
+        debug_desc.grid(row=1, column=2, padx=(30, 0), pady=(0, 10))
         
         # 配置列权重
         settings_frame.columnconfigure(1, weight=1)
@@ -149,16 +159,17 @@ class PDFBookmarkerApp:
                             style='Info.TLabel')
         toc_info.pack(anchor=tk.W, pady=(0, 10))
         
-        # 文本输入区域
+        # 文本输入区域 - 限制高度，确保不覆盖按钮
         text_container = ttk.Frame(toc_frame)
         text_container.pack(fill=tk.BOTH, expand=True)
         
         self.toc_text = scrolledtext.ScrolledText(text_container, wrap=tk.WORD, 
-                                                font=('Consolas', 10),
+                                                font=('Consolas', 12),
                                                 bg='#f8f9fa', fg='#2c3e50',
                                                 insertbackground='#3498db',
                                                 selectbackground='#3498db',
-                                                selectforeground='white')
+                                                selectforeground='white',
+                                                height=15)  # 限制高度
         self.toc_text.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
         
         # 右侧按钮区域
@@ -180,33 +191,90 @@ class PDFBookmarkerApp:
                               command=self.clear_all, style='Danger.TButton')
         clear_btn.pack(fill=tk.X, pady=(0, 10))
         
-        # 主操作按钮区域
-        action_frame = ttk.Frame(main_container)
+        # 主操作按钮区域 - 完全重新设计
+        action_frame = ttk.LabelFrame(main_container, text="🎯 操作按钮", padding="20")
         action_frame.pack(fill=tk.X, pady=(0, 15))
         
-        # 生成书签按钮
-        generate_btn = ttk.Button(action_frame, text="🚀 生成书签", 
-                                 command=self.generate_bookmarks, style='Success.TButton')
-        generate_btn.pack(side=tk.LEFT, padx=(0, 10))
+        # 使用网格布局确保按钮位置
+        # 清除原始书签按钮
+        clear_bookmarks_btn = tk.Button(action_frame, text="🧹 清除原始书签", 
+                                       command=self.clear_original_bookmarks, 
+                                       font=('Arial', 14, 'bold'),
+                                       bg='#f39c12', fg='black',
+                                       relief='raised', bd=3,
+                                       padx=30, pady=10)
+        clear_bookmarks_btn.grid(row=0, column=0, padx=(0, 20), pady=10)
         
-        # 测试Ghostscript按钮
-        test_btn = ttk.Button(action_frame, text="🧪 测试Ghostscript", 
-                             command=self.test_ghostscript, style='Primary.TButton')
-        test_btn.pack(side=tk.LEFT, padx=(0, 10))
+        # 生成书签按钮
+        generate_btn = tk.Button(action_frame, text="🚀 生成书签", 
+                                command=self.generate_bookmarks, 
+                                font=('Arial', 14, 'bold'),
+                                bg='#27ae60', fg='black',
+                                relief='raised', bd=3,
+                                padx=30, pady=10)
+        generate_btn.grid(row=0, column=1, padx=(0, 20), pady=10)
+        
+        # 测试工具按钮
+        test_btn = tk.Button(action_frame, text="🧪 测试工具", 
+                            command=self.test_all_tools, 
+                            font=('Arial', 14, 'bold'),
+                            bg='#3498db', fg='black',
+                            relief='raised', bd=3,
+                            padx=30, pady=10)
+        test_btn.grid(row=0, column=2, padx=(0, 20), pady=10)
         
         # 退出按钮
-        exit_btn = ttk.Button(action_frame, text="❌ 退出", 
-                             command=self.root.quit, style='Danger.TButton')
-        exit_btn.pack(side=tk.RIGHT)
+        exit_btn = tk.Button(action_frame, text="❌ 退出", 
+                            command=self.root.quit, 
+                            font=('Arial', 14, 'bold'),
+                            bg='#e74c3c', fg='black',
+                            relief='raised', bd=3,
+                            padx=30, pady=10)
+        exit_btn.grid(row=0, column=3, padx=(0, 0), pady=10)
+        
+        # 配置列权重
+        action_frame.columnconfigure(0, weight=1)
+        action_frame.columnconfigure(1, weight=1)
+        action_frame.columnconfigure(2, weight=1)
+        action_frame.columnconfigure(3, weight=1)
+        
+        # 等待布局完成后再获取位置信息
+        self.root.after(200, self.show_button_positions, action_frame, clear_bookmarks_btn, generate_btn, test_btn, exit_btn)
+        
+        # 在窗口显示完成后强制更新
+        self.root.after(500, self.force_update_layout, action_frame, clear_bookmarks_btn, generate_btn, test_btn, exit_btn)
         
         # 状态栏
         status_frame = ttk.Frame(main_container, style='Info.TFrame')
         status_frame.pack(fill=tk.X, pady=(0, 5))
         
+        # 创建状态栏容器
+        status_container = ttk.Frame(status_frame)
+        status_container.pack(fill=tk.X, padx=8, pady=8)
+        
+        # 左侧状态信息
         self.status_var = tk.StringVar(value="✅ 就绪 - 请选择PDF文件并输入目录内容")
-        status_label = ttk.Label(status_frame, textvariable=self.status_var, 
-                                style='Info.TLabel', padding="8")
-        status_label.pack(fill=tk.X)
+        status_label = ttk.Label(status_container, textvariable=self.status_var, 
+                                style='Info.TLabel')
+        status_label.pack(side=tk.LEFT)
+        
+        # 右侧Ghostscript状态
+        self.gs_status_var = tk.StringVar(value="")
+        gs_status_label = ttk.Label(status_container, textvariable=self.gs_status_var, 
+                                   style='Info.TLabel')
+        gs_status_label.pack(side=tk.RIGHT)
+        
+        # 初始化时检查Ghostscript状态
+        self.update_ghostscript_status()
+        
+        # 调试：检查按钮是否正确创建
+        if self.debug_var.get():
+            print("按钮创建状态:")
+            print(f"  清除书签按钮: {clear_bookmarks_btn.winfo_exists()}")
+            print(f"  生成书签按钮: {generate_btn.winfo_exists()}")
+            print(f"  测试按钮: {test_btn.winfo_exists()}")
+            print(f"  退出按钮: {exit_btn.winfo_exists()}")
+            print(f"  动作框架: {action_frame.winfo_exists()}")
         
     def browse_pdf(self):
         filename = filedialog.askopenfilename(
@@ -214,6 +282,10 @@ class PDFBookmarkerApp:
             filetypes=[("PDF文件", "*.pdf"), ("所有文件", "*.*")]
         )
         if filename:
+            # 清除占位符状态
+            if self.is_placeholder:
+                self.is_placeholder = False
+                self.pdf_entry.config(foreground='black')
             self.pdf_path_var.set(filename)
             
     def load_example(self):
@@ -323,6 +395,7 @@ Exercises 42
         
     def check_ghostscript(self):
         """检查Ghostscript是否可用"""
+        # 首先检查系统PATH中的命令
         try:
             # 尝试运行ghostscript命令
             result = subprocess.run(['gs', '--version'], 
@@ -341,13 +414,103 @@ Exercises 42
                     return True, result.stdout.strip()
             except (subprocess.TimeoutExpired, FileNotFoundError):
                 continue
+        
+        # 检查常见的安装路径
+        common_paths = self.get_common_ghostscript_paths()
+        for path in common_paths:
+            if os.path.exists(path):
+                try:
+                    result = subprocess.run([path, '--version'], 
+                                          capture_output=True, text=True, timeout=10)
+                    if result.returncode == 0:
+                        return True, result.stdout.strip()
+                except:
+                    continue
                 
         return False, None
+    
+    def check_qpdf(self):
+        """检查qpdf是否可用"""
+        try:
+            # 尝试运行qpdf命令
+            result = subprocess.run(['qpdf', '--version'], 
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                return True, result.stdout.strip()
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass
+            
+        # 尝试其他可能的命令名
+        for cmd in ['qpdf', 'qpdf.exe']:
+            try:
+                result = subprocess.run([cmd, '--version'], 
+                                      capture_output=True, text=True, timeout=10)
+                if result.returncode == 0:
+                    return True, result.stdout.strip()
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                continue
+                
+        return False, None
+    
+    def get_common_ghostscript_paths(self):
+        """获取常见的Ghostscript安装路径"""
+        paths = []
+        
+        # 获取当前脚本所在目录
+        if getattr(sys, 'frozen', False):
+            # 打包后的可执行文件
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # 开发环境
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        # 检查当前目录和子目录
+        for root, dirs, files in os.walk(base_path):
+            for file in files:
+                if file.lower() in ['gs', 'gswin64c', 'gswin32c']:
+                    paths.append(os.path.join(root, file))
+        
+        # Windows常见路径
+        if os.name == 'nt':
+            program_files = os.environ.get('PROGRAMFILES', 'C:\\Program Files')
+            program_files_x86 = os.environ.get('PROGRAMFILES(X86)', 'C:\\Program Files (x86)')
+            
+            gs_paths = [
+                os.path.join(program_files, 'gs', 'gs*', 'bin', 'gswin64c.exe'),
+                os.path.join(program_files_x86, 'gs', 'gs*', 'bin', 'gswin32c.exe'),
+                os.path.join(program_files, 'gs', 'gs*', 'bin', 'gs.exe'),
+                os.path.join(program_files_x86, 'gs', 'gs*', 'bin', 'gs.exe'),
+            ]
+            
+            for pattern in gs_paths:
+                import glob
+                matches = glob.glob(pattern)
+                paths.extend(matches)
+        
+        # macOS常见路径
+        elif sys.platform == 'darwin':
+            mac_paths = [
+                '/usr/local/bin/gs',
+                '/opt/homebrew/bin/gs',
+                '/usr/bin/gs'
+            ]
+            paths.extend(mac_paths)
+        
+        # Linux常见路径
+        elif sys.platform.startswith('linux'):
+            linux_paths = [
+                '/usr/bin/gs',
+                '/usr/local/bin/gs',
+                '/opt/gs/bin/gs'
+            ]
+            paths.extend(linux_paths)
+        
+        return paths
         
     def generate_bookmarks(self):
         """生成PDF书签"""
         # 检查输入
-        if not self.pdf_path_var.get():
+        if not self.pdf_path_var.get() or self.is_placeholder:
             messagebox.showerror("错误", "请选择PDF文件")
             return
             
@@ -393,9 +556,11 @@ Exercises 42
                 "Windows: 下载并安装Ghostscript\n"
                 "macOS: brew install ghostscript\n"
                 "Linux: sudo apt-get install ghostscript")
+            self.update_ghostscript_status()  # 更新状态栏
             return
             
         self.status_var.set(f"✅ 使用Ghostscript版本: {gs_version}")
+        self.update_ghostscript_status()  # 更新状态栏
         
         try:
             # 解析目录
@@ -499,6 +664,7 @@ Exercises 42
             
     def get_ghostscript_command(self):
         """获取可用的Ghostscript命令"""
+        # 首先检查系统PATH中的命令
         for cmd in ['gs', 'gswin64c', 'gswin32c']:
             try:
                 subprocess.run([cmd, '--version'], 
@@ -506,7 +672,20 @@ Exercises 42
                 return cmd
             except:
                 continue
-        return 'gs'  # 默认返回
+        
+        # 检查常见安装路径
+        common_paths = self.get_common_ghostscript_paths()
+        for path in common_paths:
+            if os.path.exists(path):
+                try:
+                    subprocess.run([path, '--version'], 
+                                  capture_output=True, timeout=5)
+                    return path
+                except:
+                    continue
+        
+        # 如果都找不到，返回默认命令
+        return 'gs'
         
     def show_error_log(self, error_msg):
         """显示美化的错误日志窗口"""
@@ -605,6 +784,124 @@ Exercises 42
         error_window.focus_set()
         error_window.grab_set()  # 模态窗口
         
+    def test_all_tools(self):
+        """测试所有工具（Ghostscript和qpdf）"""
+        try:
+            test_results = []
+            test_results.append("=" * 60)
+            test_results.append("PDF书签生成器 - 工具测试报告")
+            test_results.append("=" * 60)
+            test_results.append("")
+            
+            # 测试Ghostscript
+            test_results.append("🔧 Ghostscript 测试")
+            test_results.append("-" * 30)
+            gs_available, gs_version = self.check_ghostscript()
+            if gs_available:
+                gs_cmd = self.get_ghostscript_command()
+                test_results.append(f"✓ Ghostscript已找到")
+                test_results.append(f"  版本: {gs_version}")
+                test_results.append(f"  命令: {gs_cmd}")
+                
+                # 测试版本信息
+                try:
+                    result = subprocess.run([gs_cmd, '--version'], 
+                                          capture_output=True, text=True, timeout=10)
+                    if result.returncode == 0:
+                        test_results.append(f"  版本测试: ✓ 成功")
+                    else:
+                        test_results.append(f"  版本测试: ✗ 失败 (退出代码: {result.returncode})")
+                except Exception as e:
+                    test_results.append(f"  版本测试: ✗ 异常: {str(e)}")
+                
+                # 测试pdfwrite设备
+                try:
+                    result = subprocess.run([gs_cmd, '-h'], 
+                                          capture_output=True, text=True, timeout=10)
+                    if result.returncode == 0 and 'pdfwrite' in result.stdout:
+                        test_results.append("  pdfwrite设备: ✓ 支持")
+                    else:
+                        test_results.append("  pdfwrite设备: ✗ 不支持")
+                except Exception:
+                    test_results.append("  pdfwrite设备: ✗ 测试失败")
+            else:
+                test_results.append("✗ Ghostscript未找到")
+                test_results.append("  状态: 无法检测到Ghostscript")
+                test_results.append("  建议: 请安装Ghostscript并确保添加到PATH")
+            
+            test_results.append("")
+            
+            # 测试qpdf
+            test_results.append("🔧 qpdf 测试")
+            test_results.append("-" * 30)
+            qpdf_available, qpdf_version = self.check_qpdf()
+            if qpdf_available:
+                test_results.append(f"✓ qpdf已找到")
+                test_results.append(f"  版本: {qpdf_version}")
+                test_results.append(f"  命令: qpdf")
+                
+                # 测试版本信息
+                try:
+                    result = subprocess.run(['qpdf', '--version'], 
+                                          capture_output=True, text=True, timeout=10)
+                    if result.returncode == 0:
+                        test_results.append(f"  版本测试: ✓ 成功")
+                    else:
+                        test_results.append(f"  版本测试: ✗ 失败 (退出代码: {result.returncode})")
+                except Exception as e:
+                    test_results.append(f"  版本测试: ✗ 异常: {str(e)}")
+                
+                # 测试帮助信息
+                try:
+                    result = subprocess.run(['qpdf', '--help'], 
+                                          capture_output=True, text=True, timeout=10)
+                    if result.returncode == 0:
+                        test_results.append("  帮助测试: ✓ 成功")
+                    else:
+                        test_results.append("  帮助测试: ✗ 失败")
+                except Exception:
+                    test_results.append("  帮助测试: ✗ 测试失败")
+                    
+            else:
+                test_results.append("✗ qpdf未找到")
+                test_results.append("  状态: 无法检测到qpdf")
+                test_results.append("  建议: 请安装qpdf并确保添加到PATH")
+            
+            test_results.append("")
+            
+            # 功能可用性总结
+            test_results.append("📊 功能可用性总结")
+            test_results.append("-" * 30)
+            if gs_available and qpdf_available:
+                test_results.append("✓ 所有功能完全可用")
+                test_results.append("  🚀 生成书签: 可用 (需要Ghostscript)")
+                test_results.append("  🧹 清除原始书签: 可用 (需要qpdf)")
+                test_results.append("  📝 建议: 您可以使用所有功能")
+            elif gs_available and not qpdf_available:
+                test_results.append("⚠️ 部分功能可用")
+                test_results.append("  🚀 生成书签: 可用 (Ghostscript已安装)")
+                test_results.append("  🧹 清除原始书签: 不可用 (缺少qpdf)")
+                test_results.append("  📝 建议: 安装qpdf以使用清除书签功能")
+            elif not gs_available and qpdf_available:
+                test_results.append("⚠️ 部分功能可用")
+                test_results.append("  🚀 生成书签: 不可用 (缺少Ghostscript)")
+                test_results.append("  🧹 清除原始书签: 可用 (qpdf已安装)")
+                test_results.append("  📝 建议: 安装Ghostscript以使用生成书签功能")
+            else:
+                test_results.append("✗ 无法使用主要功能")
+                test_results.append("  🚀 生成书签: 不可用 (缺少Ghostscript)")
+                test_results.append("  🧹 清除原始书签: 不可用 (缺少qpdf)")
+                test_results.append("  📝 建议: 请安装Ghostscript和qpdf")
+            
+            test_results.append("")
+            test_results.append("=" * 60)
+            
+            # 显示综合测试结果窗口
+            self.show_comprehensive_test_window(test_results, gs_available, qpdf_available)
+            
+        except Exception as e:
+            messagebox.showerror("测试异常", f"测试过程中发生异常:\n{str(e)}")
+    
     def test_ghostscript(self):
         """测试Ghostscript连接和功能"""
         try:
@@ -764,6 +1061,170 @@ Exercises 42
         save_btn = ttk.Button(button_frame, text="💾 保存结果", 
                              command=save_results, style='Success.TButton')
         save_btn.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # 关闭按钮
+        close_btn = ttk.Button(button_frame, text="❌ 关闭", 
+                              command=test_window.destroy, style='Danger.TButton')
+        close_btn.pack(side=tk.RIGHT)
+        
+        # 设置焦点
+        test_window.focus_set()
+    
+    def show_comprehensive_test_window(self, test_results, gs_available, qpdf_available):
+        """显示综合工具测试结果窗口"""
+        # 创建新窗口
+        test_window = tk.Toplevel(self.root)
+        test_window.title("🧪 工具测试报告")
+        test_window.geometry("900x700")
+        test_window.resizable(True, True)
+        
+        # 根据测试结果设置背景色
+        if gs_available and qpdf_available:
+            bg_color = '#f0fff0'  # 浅绿色 - 全部可用
+        elif gs_available or qpdf_available:
+            bg_color = '#fff8dc'  # 浅黄色 - 部分可用
+        else:
+            bg_color = '#ffe4e1'  # 浅红色 - 都不可用
+            
+        test_window.configure(bg=bg_color)
+        
+        # 设置窗口图标
+        try:
+            test_window.iconbitmap('icon.ico')
+        except:
+            pass
+        
+        # 创建主框架
+        main_frame = ttk.Frame(test_window, padding="20")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # 标题区域
+        title_frame = ttk.Frame(main_frame)
+        title_frame.pack(fill=tk.X, pady=(0, 20))
+        
+        # 测试图标和标题
+        test_icon = ttk.Label(title_frame, text="🧪", font=("Arial", 24))
+        test_icon.pack(side=tk.LEFT, padx=(0, 10))
+        
+        title_label = ttk.Label(title_frame, text="工具测试报告", style='Title.TLabel')
+        title_label.pack(side=tk.LEFT)
+        
+        # 状态指示器
+        if gs_available and qpdf_available:
+            status_text = "✓ 所有工具可用"
+            status_color = "#27ae60"
+        elif gs_available or qpdf_available:
+            status_text = "⚠️ 部分工具可用"
+            status_color = "#f39c12"
+        else:
+            status_text = "✗ 工具缺失"
+            status_color = "#e74c3c"
+            
+        status_label = ttk.Label(title_frame, text=status_text, 
+                                font=('Arial', 14, 'bold'), foreground=status_color)
+        status_label.pack(side=tk.RIGHT, pady=(5, 0))
+        
+        # 创建结果容器
+        results_container = ttk.LabelFrame(main_frame, text="📊 测试详情", padding="15")
+        results_container.pack(fill=tk.BOTH, expand=True, pady=(0, 20))
+        
+        # 滚动文本区域
+        text_widget = scrolledtext.ScrolledText(results_container, wrap=tk.WORD, 
+                                              font=("Consolas", 11),
+                                              bg='#ffffff', fg='#2c3e50',
+                                              insertbackground='#3498db',
+                                              selectbackground='#3498db',
+                                              selectforeground='white',
+                                              relief='flat',
+                                              borderwidth=1)
+        text_widget.pack(fill=tk.BOTH, expand=True)
+        
+        # 插入测试结果并应用样式
+        for result in test_results:
+            if "✓" in result and ("成功" in result or "可用" in result or "支持" in result):
+                # 成功结果使用绿色
+                text_widget.insert(tk.END, result + "\n", "success")
+            elif "✗" in result and ("失败" in result or "不可用" in result or "不支持" in result or "未找到" in result):
+                # 失败结果使用红色
+                text_widget.insert(tk.END, result + "\n", "error")
+            elif "⚠️" in result:
+                # 警告结果使用橙色
+                text_widget.insert(tk.END, result + "\n", "warning")
+            elif result.startswith("🔧") or result.startswith("📊"):
+                # 标题使用蓝色
+                text_widget.insert(tk.END, result + "\n", "header")
+            elif "建议:" in result or "📝" in result:
+                # 建议使用紫色
+                text_widget.insert(tk.END, result + "\n", "suggestion")
+            else:
+                # 普通信息
+                text_widget.insert(tk.END, result + "\n")
+        
+        # 配置标签样式
+        text_widget.tag_configure("success", foreground="#27ae60", font=("Consolas", 11, "bold"))
+        text_widget.tag_configure("error", foreground="#e74c3c", font=("Consolas", 11, "bold"))
+        text_widget.tag_configure("warning", foreground="#f39c12", font=("Consolas", 11, "bold"))
+        text_widget.tag_configure("header", foreground="#3498db", font=("Consolas", 12, "bold"))
+        text_widget.tag_configure("suggestion", foreground="#9b59b6", font=("Consolas", 11, "italic"))
+        
+        # 按钮区域
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # 复制结果按钮
+        def copy_results():
+            test_window.clipboard_clear()
+            test_window.clipboard_append("\n".join(test_results))
+            messagebox.showinfo("📋 提示", "测试结果已复制到剪贴板")
+        
+        copy_btn = ttk.Button(button_frame, text="📋 复制结果", 
+                             command=copy_results, style='Primary.TButton')
+        copy_btn.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # 保存结果按钮
+        def save_results():
+            filename = filedialog.asksaveasfilename(
+                title="💾 保存测试报告",
+                defaultextension=".txt",
+                filetypes=[("文本文件", "*.txt"), ("所有文件", "*.*")]
+            )
+            if filename:
+                try:
+                    with open(filename, 'w', encoding='utf-8') as f:
+                        f.write("\n".join(test_results))
+                    messagebox.showinfo("✅ 成功", f"测试报告已保存到:\n{filename}")
+                except Exception as e:
+                    messagebox.showerror("❌ 错误", f"保存文件失败:\n{str(e)}")
+        
+        save_btn = ttk.Button(button_frame, text="💾 保存报告", 
+                             command=save_results, style='Success.TButton')
+        save_btn.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # 安装指南按钮
+        def show_install_guide():
+            guide_text = ""
+            if not gs_available:
+                guide_text += "🔧 Ghostscript 安装指南:\n"
+                guide_text += "• Windows: 下载官方安装包并运行\n"
+                guide_text += "• macOS: brew install ghostscript\n"
+                guide_text += "• Linux: sudo apt-get install ghostscript\n\n"
+            
+            if not qpdf_available:
+                guide_text += "🔧 qpdf 安装指南:\n"
+                guide_text += "• Windows: 下载官方安装包并运行\n"
+                guide_text += "• macOS: brew install qpdf\n"
+                guide_text += "• Linux: sudo apt-get install qpdf\n\n"
+            
+            if guide_text:
+                guide_text += "安装完成后请重启应用并重新测试。"
+                messagebox.showinfo("📚 安装指南", guide_text)
+            else:
+                messagebox.showinfo("✅ 提示", "所有工具都已正确安装！")
+        
+        if not (gs_available and qpdf_available):
+            install_btn = ttk.Button(button_frame, text="📚 安装指南", 
+                                   command=show_install_guide, style='Warning.TButton')
+            install_btn.pack(side=tk.LEFT, padx=(0, 10))
         
         # 关闭按钮
         close_btn = ttk.Button(button_frame, text="❌ 关闭", 
@@ -985,6 +1446,182 @@ Exercises 42
             text_widget.insert(tk.END, "\n\n" + "=" * 60 + "\n")
             text_widget.insert(tk.END, "✓ 未发现明显问题，书签格式正确\n", "info")
             text_widget.insert(tk.END, "=" * 60 + "\n")
+
+    def update_ghostscript_status(self):
+        """更新Ghostscript状态栏信息"""
+        gs_available, gs_version = self.check_ghostscript()
+        if gs_available:
+            self.gs_status_var.set(f"✅ 已找到Ghostscript: {gs_version}")
+        else:
+            self.gs_status_var.set("❌ 未找到Ghostscript。请安装Ghostscript并确保它在系统PATH中。")
+
+    def setup_placeholder(self):
+        """设置placeholder效果"""
+        # 显示占位符文本
+        self.pdf_path_var.set(self.placeholder_text)
+        self.pdf_entry.config(foreground='gray')
+        
+        # 绑定事件
+        self.pdf_entry.bind('<FocusIn>', self.on_entry_focus_in)
+        self.pdf_entry.bind('<FocusOut>', self.on_entry_focus_out)
+        self.pdf_entry.bind('<Key>', self.on_entry_key)
+    
+    def on_entry_focus_in(self, event):
+        """输入框获得焦点时"""
+        if self.is_placeholder:
+            self.pdf_path_var.set("")
+            self.pdf_entry.config(foreground='black')
+            self.is_placeholder = False
+    
+    def on_entry_focus_out(self, event):
+        """输入框失去焦点时"""
+        if not self.pdf_path_var.get().strip():
+            self.pdf_path_var.set(self.placeholder_text)
+            self.pdf_entry.config(foreground='gray')
+            self.is_placeholder = True
+    
+    def on_entry_key(self, event):
+        """按键事件处理"""
+        if self.is_placeholder:
+            # 如果当前是占位符状态，任何按键都清除占位符
+            self.pdf_path_var.set("")
+            self.pdf_entry.config(foreground='black')
+            self.is_placeholder = False
+    
+    def paste_pdf_path(self, event):
+        """处理粘贴PDF路径"""
+        try:
+            # 获取剪贴板内容
+            pasted_text = self.root.clipboard_get()
+            
+            # 清除占位符状态
+            if self.is_placeholder:
+                self.is_placeholder = False
+                self.pdf_entry.config(foreground='black')
+            
+            # 检查是否是文件路径
+            if os.path.exists(pasted_text) and pasted_text.lower().endswith('.pdf'):
+                self.pdf_path_var.set(pasted_text)
+                messagebox.showinfo("📋 提示", f"PDF路径已粘贴: {pasted_text}")
+            else:
+                messagebox.showwarning("警告", "粘贴的文本不是有效的PDF文件路径。")
+        except tk.TclError:
+            messagebox.showwarning("警告", "剪贴板为空或无法访问。")
+
+    def show_button_positions(self, action_frame, clear_bookmarks_btn, generate_btn, test_btn, exit_btn):
+        """显示按钮位置信息"""
+        print(f"按钮区域位置: x={action_frame.winfo_x()}, y={action_frame.winfo_y()}")
+        print(f"按钮区域大小: width={action_frame.winfo_width()}, height={action_frame.winfo_height()}")
+        print(f"清除书签按钮位置: x={clear_bookmarks_btn.winfo_x()}, y={clear_bookmarks_btn.winfo_y()}")
+        print(f"生成按钮位置: x={generate_btn.winfo_x()}, y={generate_btn.winfo_y()}")
+        print(f"测试按钮位置: x={test_btn.winfo_x()}, y={test_btn.winfo_y()}")
+        print(f"退出按钮位置: x={exit_btn.winfo_x()}, y={exit_btn.winfo_y()}")
+
+    def force_update_layout(self, action_frame, clear_bookmarks_btn, generate_btn, test_btn, exit_btn):
+        """强制更新布局，确保按钮位置正确"""
+        self.root.update_idletasks()
+        self.root.update()
+        print("布局已强制更新。")
+        self.show_button_positions(action_frame, clear_bookmarks_btn, generate_btn, test_btn, exit_btn)
+    
+    def clear_original_bookmarks(self):
+        """清除PDF原始书签"""
+        # 检查输入
+        if not self.pdf_path_var.get() or self.is_placeholder:
+            messagebox.showerror("错误", "请先选择PDF文件")
+            return
+            
+        # 验证PDF文件
+        input_pdf_path = Path(self.pdf_path_var.get())
+        if not input_pdf_path.exists():
+            messagebox.showerror("错误", f"PDF文件不存在:\n{input_pdf_path}")
+            return
+            
+        if not input_pdf_path.is_file():
+            messagebox.showerror("错误", f"选择的路径不是文件:\n{input_pdf_path}")
+            return
+            
+        # 检查文件大小
+        file_size = input_pdf_path.stat().st_size
+        if file_size == 0:
+            messagebox.showerror("错误", "PDF文件大小为0，可能已损坏")
+            return
+        
+        # 检查qpdf是否可用
+        qpdf_available, qpdf_version = self.check_qpdf()
+        if not qpdf_available:
+            messagebox.showerror("错误", 
+                "未找到qpdf。请安装qpdf并确保它在系统PATH中。\n\n"
+                "安装说明:\n"
+                "Windows: 下载并安装qpdf\n"
+                "macOS: brew install qpdf\n"
+                "Linux: sudo apt-get install qpdf")
+            return
+            
+        self.status_var.set(f"✅ 使用qpdf版本: {qpdf_version}")
+        
+        try:
+            # 生成输出文件名
+            output_pdf = input_pdf_path.parent / f"{input_pdf_path.stem}_no_bookmarks.pdf"
+            
+            # 检查输出目录权限
+            if not os.access(input_pdf_path.parent, os.W_OK):
+                messagebox.showerror("错误", f"没有输出目录的写入权限:\n{input_pdf_path.parent}")
+                return
+                
+            if self.debug_var.get():
+                print(f"清除书签信息:")
+                print(f"  输入PDF: {input_pdf_path}")
+                print(f"  输出PDF: {output_pdf}")
+                print(f"  使用qpdf: {qpdf_version}")
+            
+            # 运行qpdf命令清除书签
+            cmd = [
+                'qpdf',
+                '--empty',
+                '--pages', str(input_pdf_path), '1-z',
+                '--', str(output_pdf)
+            ]
+            
+            self.status_var.set("🔄 正在清除原始书签...")
+            self.root.update()
+            
+            # 显示执行的命令
+            cmd_str = ' '.join(cmd)
+            if self.debug_var.get():
+                print(f"执行命令: {cmd_str}")
+                print(f"工作目录: {os.getcwd()}")
+            
+            # 执行命令并捕获详细输出
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            
+            if result.returncode == 0:
+                messagebox.showinfo("成功", 
+                    f"PDF原始书签已清除成功！\n\n"
+                    f"输出文件: {output_pdf}\n"
+                    f"原文件: {input_pdf_path}")
+                self.status_var.set("🎉 原始书签清除完成！输出文件已保存")
+                
+                # 询问是否要更新输入路径为清理后的文件
+                if messagebox.askyesno("更新路径", 
+                    f"是否将输入路径更新为清理后的文件？\n{output_pdf}"):
+                    self.pdf_path_var.set(str(output_pdf))
+                    if self.is_placeholder:
+                        self.is_placeholder = False
+                        self.pdf_entry.config(foreground='black')
+            else:
+                # 显示详细的错误信息
+                error_msg = f"qpdf执行失败 (退出代码: {result.returncode})\n\n"
+                error_msg += f"执行的命令:\n{cmd_str}\n\n"
+                error_msg += f"标准输出:\n{result.stdout}\n\n"
+                error_msg += f"错误输出:\n{result.stderr}"
+                
+                messagebox.showerror("❌ 错误", error_msg)
+                self.status_var.set("❌ 原始书签清除失败，请查看错误详情")
+                
+        except Exception as e:
+            messagebox.showerror("❌ 错误", f"清除过程中发生错误:\n{str(e)}")
+            self.status_var.set("❌ 原始书签清除失败，请查看错误详情")
 
 def main():
     root = tk.Tk()
