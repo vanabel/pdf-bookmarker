@@ -77,9 +77,8 @@ class PDFBookmarkerApp:
                 icon_path = icon_config.get_platform_icon()
                 if icon_path:
                     if sys.platform == "darwin":  # macOS
-                        # macOS使用PhotoImage
-                        icon_image = tk.PhotoImage(file=icon_path)
-                        self.root.iconphoto(True, icon_image)
+                        # macOS需要特殊处理标题栏图标
+                        self.setup_macos_icon(icon_path)
                     elif sys.platform == "win32":  # Windows
                         # Windows使用iconbitmap
                         self.root.iconbitmap(icon_path)
@@ -94,6 +93,94 @@ class PDFBookmarkerApp:
                 print(f"❌ 设置窗口图标失败: {e}")
         else:
             print("⚠️ 图标配置不可用，使用默认图标")
+    
+    def setup_macos_icon(self, icon_path):
+        """专门为macOS设置图标"""
+        try:
+            # 方法1: 使用iconphoto设置应用图标（Dock和任务切换）
+            icon_image = tk.PhotoImage(file=icon_path)
+            self.root.iconphoto(True, icon_image)
+            
+            # 方法2: 尝试设置窗口标题栏图标
+            # 在macOS上，这需要特殊处理
+            self.root.after(200, self.setup_macos_titlebar_icon, icon_path)
+            
+            # 方法3: 延迟多次尝试设置标题栏图标
+            self.root.after(500, self.setup_macos_titlebar_icon, icon_path)
+            self.root.after(1000, self.setup_macos_titlebar_icon, icon_path)
+            
+            print(f"✅ macOS图标设置完成: {icon_path}")
+            
+        except Exception as e:
+            print(f"❌ macOS图标设置失败: {e}")
+    
+    def setup_macos_titlebar_icon(self, icon_path):
+        """设置macOS标题栏图标"""
+        try:
+            # 方法1: 使用Tcl命令设置窗口图标
+            if hasattr(self.root, 'tk') and hasattr(self.root.tk, 'call'):
+                # 创建PhotoImage对象并保持引用
+                self.macos_icon = tk.PhotoImage(file=icon_path)
+                # 使用wm iconphoto命令
+                self.root.tk.call('wm', 'iconphoto', self.root._w, self.macos_icon)
+                print(f"✅ macOS标题栏图标设置成功")
+                
+                # 方法2: 尝试设置窗口属性
+                try:
+                    self.root.wm_attributes('-icon', icon_path)
+                    print(f"✅ macOS窗口属性图标设置成功")
+                except:
+                    pass
+                    
+            else:
+                print("⚠️ macOS标题栏图标设置方法不可用")
+        except Exception as e:
+            print(f"⚠️ macOS标题栏图标设置失败: {e}")
+            # 尝试其他方法
+            self.try_alternative_macos_icon_setup(icon_path)
+    
+    def try_alternative_macos_icon_setup(self, icon_path):
+        """尝试其他macOS图标设置方法"""
+        try:
+            # 方法1: 尝试设置窗口属性
+            if hasattr(self.root, 'wm_attributes'):
+                self.root.wm_attributes('-icon', icon_path)
+                print(f"✅ macOS替代图标设置方法1成功")
+                return
+            
+            # 方法2: 尝试使用iconbitmap（虽然通常不支持PNG）
+            try:
+                self.root.iconbitmap(icon_path)
+                print(f"✅ macOS替代图标设置方法2成功")
+                return
+            except:
+                pass
+            
+            # 方法3: 尝试使用Tcl的wm iconbitmap命令
+            try:
+                if hasattr(self.root, 'tk') and hasattr(self.root.tk, 'call'):
+                    self.root.tk.call('wm', 'iconbitmap', self.root._w, icon_path)
+                    print(f"✅ macOS替代图标设置方法3成功")
+                    return
+            except:
+                pass
+            
+            # 方法4: 尝试设置窗口类名和图标
+            try:
+                if hasattr(self.root, 'tk') and hasattr(self.root.tk, 'call'):
+                    # 设置窗口类名
+                    self.root.tk.call('wm', 'class', self.root._w, 'PDFBookmarker')
+                    # 尝试设置图标
+                    self.root.tk.call('wm', 'iconphoto', self.root._w, tk.PhotoImage(file=icon_path))
+                    print(f"✅ macOS替代图标设置方法4成功")
+                    return
+            except:
+                pass
+                
+            print("⚠️ 所有macOS标题栏图标设置方法都不可用")
+                
+        except Exception as e:
+            print(f"⚠️ macOS替代图标设置失败: {e}")
     
     def center_window(self):
         """将窗口居中显示"""

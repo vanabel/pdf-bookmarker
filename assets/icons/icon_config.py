@@ -22,7 +22,7 @@ class IconConfig:
             "256": self.icons_dir / "icon_256.png", 
             "128": self.icons_dir / "icon_128.png",
             "64": self.icons_dir / "icon_64.png",
-            "32": self.icons_dir / "icon_32.png",  # 如果需要的话
+            "32": self.icons_dir / "icon_32.png",  # 标题栏和文件关联
         }
     
     def get_icon_path(self, size="512"):
