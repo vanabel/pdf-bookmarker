@@ -1,52 +1,47 @@
 # 📚 PDF书签生成器 - 文档中心
 
-欢迎来到PDF书签生成器的文档中心！这里包含了项目的完整文档和使用指南。
+欢迎来到PDF书签生成器的文档中心！这里包含了使用、安装、构建和发布的所有相关信息。
 
-## 🚀 快速开始
+## 📖 文档目录
 
-- **[安装指南](INSTALLATION_GUIDE.md)** - 安装Ghostscript和qpdf的详细说明
-- **[构建指南](BUILD_GUIDE.md)** - 使用PyInstaller打包应用的完整指南
+### 🚀 快速开始
+- [新功能总结](NEW_FEATURE_SUMMARY.md) - 了解最新功能特性
+- [安装指南](INSTALLATION_GUIDE.md) - 系统依赖安装说明
+- [构建指南](BUILD_GUIDE.md) - 应用打包和构建说明
 
-## 🛠️ 开发与集成
+### 🏠 本地开发
+- **[本地构建指南](LOCAL_BUILD_GUIDE.md)** - **推荐！** 本地构建完整指南
+- [图标集成说明](ICON_INTEGRATION.md) - 应用图标配置和集成
 
-- **[新功能总结](NEW_FEATURE_SUMMARY.md)** - 项目功能特性总览
-- **[图标集成指南](ICON_INTEGRATION.md)** - 应用图标系统的配置和使用
-- **[自动发布指南](AUTO_RELEASE_GUIDE.md)** - GitHub Actions自动发布流程
+### 📦 发布管理
+- [自动发布指南](AUTO_RELEASE_GUIDE.md) - GitHub Actions自动发布系统
+- [发布说明模板](../releases/README.md) - 版本发布说明管理
 
-## 📋 发布管理
+## 🎯 推荐阅读顺序
 
-- **[发布说明模板](releases/RELEASE_NOTES_TEMPLATE.md)** - 标准发布说明模板
-- **[版本发布记录](releases/)** - 各版本发布说明文档
+1. **新用户**：新功能总结 → 安装指南 → 本地构建指南
+2. **开发者**：本地构建指南 → 图标集成说明 → 自动发布指南
+3. **维护者**：自动发布指南 → 发布说明模板 → 构建指南
 
-## 📖 使用说明
+## 🔍 快速查找
 
-- **应用使用说明.txt** - 基本使用方法和功能介绍
-- **demo/** - 示例文件和演示代码
+### 常见问题
+- **无法运行应用** → [本地构建指南](LOCAL_BUILD_GUIDE.md)
+- **安装依赖失败** → [安装指南](INSTALLATION_GUIDE.md)
+- **构建失败** → [构建指南](BUILD_GUIDE.md)
+- **图标不显示** → [图标集成说明](ICON_INTEGRATION.md)
 
-## 🔧 技术文档
+### 开发工具
+- **本地构建** → [本地构建指南](LOCAL_BUILD_GUIDE.md) ⭐
+- **自动发布** → [自动发布指南](AUTO_RELEASE_GUIDE.md)
+- **图标制作** → [图标集成说明](ICON_INTEGRATION.md)
 
-- **PDF书签生成器.spec** - PyInstaller配置文件
-- **requirements.txt** - Python依赖包列表
-- **setup.py** - 项目安装配置
+## 💡 重要提示
 
-## 📝 更新日志
-
-查看项目的更新历史和版本变更：
-- [GitHub Releases](https://github.com/vanabel/pdf-bookmarker/releases)
-
-## 🤝 贡献指南
-
-如果您想为项目做出贡献：
-1. Fork项目仓库
-2. 创建功能分支
-3. 提交更改
-4. 创建Pull Request
-
-## 📞 支持与反馈
-
-- 提交Issue: [GitHub Issues](https://github.com/vanabel/pdf-bookmarker/issues)
-- 查看代码: [GitHub Repository](https://github.com/vanabel/pdf-bookmarker)
+- **本地构建**是获得最佳macOS兼容性的推荐方法
+- 如果遇到"无法打开应用"错误，请参考[本地构建指南](LOCAL_BUILD_GUIDE.md)
+- 所有文档都会随项目更新，确保获取最新信息
 
 ---
 
-**享受使用PDF书签生成器！** 🎉
+**🚀 开始使用**：[新功能总结](NEW_FEATURE_SUMMARY.md) | **🏠 本地构建**：[本地构建指南](LOCAL_BUILD_GUIDE.md)

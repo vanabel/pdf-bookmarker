@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0  # 获取完整历史用于生成发布说明
-      
+        
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -132,7 +132,29 @@ jobs:
           echo "\`\`\`" >> $GITHUB_OUTPUT
           git log -1 --pretty=format:'%B' >> $GITHUB_OUTPUT
           echo "\`\`\`" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "## ⚠️ 重要说明" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "### 🔒 macOS安全限制" >> $GITHUB_OUTPUT
+          echo "由于macOS Gatekeeper安全机制，下载的应用可能无法直接运行。" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+                          echo "**解决方法**: " >> $GITHUB_OUTPUT
+                          echo "1. 右键点击应用 → 选择'打开'" >> $GITHUB_OUTPUT
+                          echo "2. 或在系统偏好设置 > 安全性与隐私中允许运行" >> $GITHUB_OUTPUT
+                          echo "3. 或使用本地构建脚本（推荐）" >> $GITHUB_OUTPUT
+                          echo "" >> $GITHUB_OUTPUT
+                          echo "### 🏠 本地构建（推荐）" >> $GITHUB_OUTPUT
+                          echo "```bash" >> $GITHUB_OUTPUT
+                          echo "# 克隆仓库" >> $GITHUB_OUTPUT
+                          echo "git clone https://github.com/vanabel/pdf-bookmarker.git" >> $GITHUB_OUTPUT
+                          echo "cd pdf-bookmarker" >> $GITHUB_OUTPUT
+                          echo "" >> $GITHUB_OUTPUT
+                          echo "# 运行构建脚本" >> $GITHUB_OUTPUT
+                          echo "./build_macos_optimized.sh" >> $GITHUB_OUTPUT
+                          echo "```" >> $GITHUB_OUTPUT
+                          echo "" >> $GITHUB_OUTPUT
+                          echo "本地构建将自动处理所有兼容性问题！" >> $GITHUB_OUTPUT
+                          echo "EOF" >> $GITHUB_OUTPUT
         fi
         
     - name: Create Release
