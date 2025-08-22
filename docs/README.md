@@ -1,40 +1,47 @@
 # 📚 PDF书签生成器 - 文档中心
 
-欢迎使用PDF书签生成器的详细文档！这里包含了所有功能的详细说明、安装指南和高级用法。
+欢迎来到PDF书签生成器的文档中心！这里包含了项目的完整文档和使用指南。
 
-## 📖 文档目录
+## 🚀 快速开始
 
-### 🚀 快速开始
-- **[新功能总结](NEW_FEATURE_SUMMARY.md)** - 最新功能概览和特性说明
-- **[应用构建指南](BUILD_GUIDE.md)** - 应用打包和分发说明
+- **[安装指南](INSTALLATION_GUIDE.md)** - 安装Ghostscript和qpdf的详细说明
+- **[构建指南](BUILD_GUIDE.md)** - 使用PyInstaller打包应用的完整指南
 
-### 🔧 安装指南
-- **[完整安装指南](INSTALLATION_GUIDE.md)** - 各平台Ghostscript和qpdf安装详细步骤
+## 🛠️ 开发与集成
 
-### 📋 功能说明
-- **[清除书签功能说明](CLEAR_BOOKMARKS_FEATURE.md)** - 清除PDF原始书签功能详细说明
-- **[调试模式说明](DEBUG_MODE_EXPLANATION.md)** - 调试模式用途和使用方法
+- **[新功能总结](NEW_FEATURE_SUMMARY.md)** - 项目功能特性总览
+- **[图标集成指南](ICON_INTEGRATION.md)** - 应用图标系统的配置和使用
+- **[自动发布指南](AUTO_RELEASE_GUIDE.md)** - GitHub Actions自动发布流程
 
-### 🎨 开发与集成
-- **[图标集成指南](ICON_INTEGRATION.md)** - 应用图标集成和使用说明
+## 📖 使用说明
 
-## 🎯 使用建议
+- **应用使用说明.txt** - 基本使用方法和功能介绍
+- **demo/** - 示例文件和演示代码
 
-1. **新用户**：从[新功能总结](NEW_FEATURE_SUMMARY.md)开始了解功能
-2. **安装问题**：查看相应的[安装指南](GHOSTSCRIPT_INSTALLATION.md)
-3. **功能使用**：参考[功能说明](CLEAR_BOOKMARKS_FEATURE.md)了解详细用法
-4. **问题排查**：使用[调试模式](DEBUG_MODE_EXPLANATION.md)进行故障诊断
+## 🔧 技术文档
 
-## 🔗 相关链接
+- **PDF书签生成器.spec** - PyInstaller配置文件
+- **requirements.txt** - Python依赖包列表
+- **setup.py** - 项目安装配置
 
-- [主项目README](../README.md) - 项目概览和快速开始
-- [GitHub仓库](https://github.com/vanabel/pdf-bookmarker) - 源代码和问题反馈
-- [发布版本](https://github.com/vanabel/pdf-bookmarker/releases) - 最新版本下载
+## 📝 更新日志
 
-## 📝 文档维护
+查看项目的更新历史和版本变更：
+- [GitHub Releases](https://github.com/vanabel/pdf-bookmarker/releases)
 
-这些文档会随着项目更新而保持同步。如果您发现文档有误或需要补充，欢迎提交Issue或Pull Request！
+## 🤝 贡献指南
+
+如果您想为项目做出贡献：
+1. Fork项目仓库
+2. 创建功能分支
+3. 提交更改
+4. 创建Pull Request
+
+## 📞 支持与反馈
+
+- 提交Issue: [GitHub Issues](https://github.com/vanabel/pdf-bookmarker/issues)
+- 查看代码: [GitHub Repository](https://github.com/vanabel/pdf-bookmarker)
 
 ---
 
-*最后更新：2024年8月22日*
+**享受使用PDF书签生成器！** 🎉
