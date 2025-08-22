@@ -96,6 +96,16 @@ if [ $(wc -l < "$RELEASE_NOTES_FILE") -gt 20 ]; then
 fi
 echo "----------------------------------------"
 
+# 显示最后一个提交信息
+echo -e "${BLUE}📝 最后一个提交信息:${NC}"
+echo "----------------------------------------"
+echo "提交哈希: $(git log -1 --pretty=format:'%h')"
+echo "提交时间: $(git log -1 --pretty=format:'%cd' --date=format:'%Y年%m月%d日 %H:%M:%S')"
+echo "提交者: $(git log -1 --pretty=format:'%an')"
+echo "提交消息:"
+git log -1 --pretty=format:'%B' | sed 's/^/  /'
+echo "----------------------------------------"
+
 # 确认发布
 read -p "确认发布版本 $VERSION? (y/N): " -n 1 -r
 echo
@@ -112,14 +122,17 @@ git commit -m "📝 添加 $VERSION 版本发布说明
 
 - 版本: $VERSION
 - 发布说明: $RELEASE_NOTES_FILE
-- 自动生成发布说明"
+- 自动生成发布说明
+- 包含最新提交信息: $(git log -1 --pretty=format:'%h')"
 
 echo -e "${GREEN}✓ 已提交发布说明${NC}"
 
 # 创建标签
 git tag -a "$VERSION" -m "Release $VERSION
 
-$(head -10 "$RELEASE_NOTES_FILE" | tail -9)"
+$(head -10 "$RELEASE_NOTES_FILE" | tail -9)
+
+最新提交: $(git log -1 --pretty=format:'%h') - $(git log -1 --pretty=format:'%s')"
 
 echo -e "${GREEN}✓ 已创建标签 $VERSION${NC}"
 
