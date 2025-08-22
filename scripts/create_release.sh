@@ -96,15 +96,40 @@ if [ $(wc -l < "$RELEASE_NOTES_FILE") -gt 20 ]; then
 fi
 echo "----------------------------------------"
 
-# 显示最后一个提交信息
-echo -e "${BLUE}📝 最后一个提交信息:${NC}"
+# 显示从最新标签之后的所有提交信息
+echo -e "${BLUE}📝 从最新标签之后的所有提交:${NC}"
 echo "----------------------------------------"
-echo "提交哈希: $(git log -1 --pretty=format:'%h')"
-echo "提交时间: $(git log -1 --pretty=format:'%cd' --date=format:'%Y年%m月%d日 %H:%M:%S')"
-echo "提交者: $(git log -1 --pretty=format:'%an')"
-echo "提交消息:"
-git log -1 --pretty=format:'%B' | sed 's/^/  /'
-echo "----------------------------------------"
+
+# 获取最新标签
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+if [ -n "$LATEST_TAG" ]; then
+    echo "最新标签: $LATEST_TAG"
+    echo "此版本包含的提交:"
+    echo ""
+    
+    # 显示从最新标签到HEAD的所有提交
+    git log --oneline "${LATEST_TAG}..HEAD" --pretty=format:"  %h - %s (%an, %cd)" --date=format:"%m/%d"
+    
+    echo ""
+    echo "详细提交信息:"
+    echo "----------------------------------------"
+    
+    # 显示每个提交的详细信息
+    git log "${LATEST_TAG}..HEAD" --pretty=format:"提交: %h%n时间: %cd%n作者: %an%n消息:%n%B%n----------------------------------------" --date=format:"%Y年%m月%d日 %H:%M:%S"
+else
+    echo "这是第一个版本，显示所有提交:"
+    echo ""
+    
+    # 显示所有提交
+    git log --oneline --pretty=format:"  %h - %s (%an, %cd)" --date=format:"%m/%d"
+    
+    echo ""
+    echo "详细提交信息:"
+    echo "----------------------------------------"
+    
+    # 显示所有提交的详细信息
+    git log --pretty=format:"提交: %h%n时间: %cd%n作者: %an%n消息:%n%B%n----------------------------------------" --date=format:"%m/%d %H:%M:%S"
+fi
 
 # 确认发布
 read -p "确认发布版本 $VERSION? (y/N): " -n 1 -r
@@ -123,7 +148,7 @@ git commit -m "📝 添加 $VERSION 版本发布说明
 - 版本: $VERSION
 - 发布说明: $RELEASE_NOTES_FILE
 - 自动生成发布说明
-- 包含最新提交信息: $(git log -1 --pretty=format:'%h')"
+- 包含 $(git log --oneline $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD 2>/dev/null | wc -l || echo "0") 个新提交"
 
 echo -e "${GREEN}✓ 已提交发布说明${NC}"
 
@@ -132,7 +157,8 @@ git tag -a "$VERSION" -m "Release $VERSION
 
 $(head -10 "$RELEASE_NOTES_FILE" | tail -9)
 
-最新提交: $(git log -1 --pretty=format:'%h') - $(git log -1 --pretty=format:'%s')"
+包含的提交:
+$(git log --oneline $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD 2>/dev/null || git log --oneline --pretty=format:"  %h - %s")"
 
 echo -e "${GREEN}✓ 已创建标签 $VERSION${NC}"
 
