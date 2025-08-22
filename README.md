@@ -32,6 +32,9 @@
 - **Multiple format support** - Standard, dot-line, and custom formats
 - **Real-time validation** - Check for issues before PDF generation
 - **Debug mode** - Detailed logging and error diagnostics
+- **Clear original bookmarks** - Remove existing bookmarks from PDFs using qpdf
+- **Comprehensive tool testing** - Test both Ghostscript and qpdf functionality
+- **Enhanced UI** - Modern interface with placeholder effects and keyboard shortcuts
 
 ### 🎨 Modern UI
 - **Beautiful interface** - Modern design with intuitive layout
@@ -130,6 +133,16 @@ Chapter I. INTRODUCTION
 - Step-by-step process logging
 - Error trace and diagnostic information
 
+#### Clear Original Bookmarks
+- Remove existing bookmarks from PDFs
+- Useful for cleaning up before adding new bookmarks
+- Preserves PDF content while removing bookmark metadata
+
+#### Tool Testing
+- Comprehensive testing of Ghostscript and qpdf
+- Detailed diagnostics and installation guidance
+- One-click verification of all dependencies
+
 ---
 
 ## 📦 Application Packaging
@@ -159,27 +172,39 @@ After building, you'll get:
 
 ## 🔧 Configuration
 
-### Ghostscript Installation
+### Dependencies Installation
 
-#### macOS
+This application requires two external tools for full functionality:
+
+- **Ghostscript** - For PDF bookmark generation
+- **qpdf** - For clearing original PDF bookmarks
+
+📖 **Detailed installation guides are available in the [docs/](docs/) directory:**
+- [Ghostscript Installation Guide](docs/GHOSTSCRIPT_INSTALLATION.md)
+- [qpdf Installation Guide](docs/QPDF_INSTALLATION.md)
+
+#### Quick Installation Commands
+
+**macOS:**
 ```bash
-brew install ghostscript
+brew install ghostscript qpdf
 ```
 
-#### Windows
-1. Download from [Ghostscript website](https://www.ghostscript.com/releases/gsdnld.html)
+**Windows:**
+1. Download from [Ghostscript](https://www.ghostscript.com/releases/gsdnld.html) and [qpdf](https://github.com/qpdf/qpdf/releases)
 2. Install and add to system PATH
 
-#### Linux (Ubuntu/Debian)
+**Linux (Ubuntu/Debian):**
 ```bash
 sudo apt-get update
-sudo apt-get install ghostscript
+sudo apt-get install ghostscript qpdf
 ```
 
 ### Environment Variables
 ```bash
-# Optional: Custom Ghostscript path
+# Optional: Custom tool paths
 export GS_PATH="/usr/local/bin/gs"
+export QPDF_PATH="/usr/local/bin/qpdf"
 ```
 
 ---
@@ -346,10 +371,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## 📚 Documentation
+
+### 📖 Complete Documentation
+For detailed guides, troubleshooting, and advanced usage, visit our comprehensive documentation:
+
+- **[📚 Documentation Center](docs/)** - Complete documentation index
+- **[🚀 New Features Guide](docs/NEW_FEATURE_SUMMARY.md)** - Latest features and improvements
+- **[🔧 Installation Guides](docs/)** - Step-by-step setup instructions
+- **[📋 Feature Documentation](docs/)** - Detailed usage and configuration
+
+### 🎯 Quick Reference
+- **Debug Mode**: [Debug Mode Explanation](docs/DEBUG_MODE_EXPLANATION.md)
+- **Clear Bookmarks**: [Clear Bookmarks Feature](docs/CLEAR_BOOKMARKS_FEATURE.md)
+- **Tool Testing**: Use "🧪 Test Tools" button in the application
+
+---
+
 ## 📞 Support & Community
 
 ### Getting Help
-- 📖 **Documentation** - This README and project docs
+- 📖 **Documentation** - This README and [detailed docs](docs/)
 - 🐛 **Issues** - [GitHub Issues](https://github.com/vanabel/pdf-bookmarker/issues)
 - 💬 **Discussions** - [GitHub Discussions](https://github.com/vanabel/pdf-bookmarker/discussions)
 - 📧 **Email** - Open an issue for direct contact
