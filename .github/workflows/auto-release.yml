@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*'  # 当推送以v开头的标签时触发
 
+permissions:
+  contents: write  # 需要写入权限来创建release
+  packages: write  # 如果需要上传包
+
 jobs:
   release:
     runs-on: macos-latest  # 使用macOS runner确保兼容性
@@ -12,6 +16,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史用于生成发布说明
       
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -131,30 +137,19 @@ jobs:
         
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: PDF书签生成器 ${{ github.ref_name }}
+        tag_name: ${{ github.ref_name }}
+        name: PDF书签生成器 ${{ github.ref_name }}
         body: ${{ steps.get_release_notes.outputs.RELEASE_NOTES }}
         draft: false
         prerelease: false
-        
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/PDF书签生成器_${{ github.ref_name }}_macOS.zip
-        asset_name: PDF书签生成器_${{ github.ref_name }}_macOS.zip
-        asset_content_type: application/zip
+        files: dist/PDF书签生成器_${{ github.ref_name }}_macOS.zip
         
     - name: Verify upload
       run: |
         echo "🔍 验证上传结果..."
-        echo "Release URL: ${{ steps.create_release.outputs.html_url }}"
+        echo "Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
         echo "上传的zip文件: PDF书签生成器_${{ github.ref_name }}_macOS.zip"
         
     - name: Cleanup build files
