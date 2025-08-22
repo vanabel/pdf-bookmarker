@@ -24,15 +24,74 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
+    - name: Debug file structure
+      run: |
+        echo "🔍 检查项目文件结构..."
+        pwd
+        ls -la
+        echo ""
+        echo "📁 检查spec文件..."
+        if [ -f "PDF书签生成器.spec" ]; then
+          echo "✅ 找到spec文件: PDF书签生成器.spec"
+          ls -la "PDF书签生成器.spec"
+        else
+          echo "❌ 未找到spec文件: PDF书签生成器.spec"
+          echo "🔍 查找所有.spec文件..."
+          find . -name "*.spec" -type f
+        fi
+        echo ""
+        echo "📁 检查requirements.txt..."
+        if [ -f "requirements.txt" ]; then
+          echo "✅ 找到requirements.txt"
+          cat requirements.txt
+        else
+          echo "❌ 未找到requirements.txt"
+        fi
+        
     - name: Build application
       run: |
         # 使用您的spec文件构建
-        pyinstaller PDF书签生成器.spec
+        echo "🔨 开始构建应用..."
+        
+        # 检查spec文件是否存在
+        if [ ! -f "PDF书签生成器.spec" ]; then
+          echo "❌ 构建失败：spec文件不存在"
+          echo "当前目录内容："
+          ls -la
+          exit 1
+        fi
+        
+        # 构建应用
+        pyinstaller "PDF书签生成器.spec"
+        
+        # 验证构建结果
+        if [ ! -d "dist/PDF书签生成器.app" ]; then
+          echo "❌ 构建失败：未找到应用文件"
+          echo "dist目录内容："
+          ls -la dist/ || echo "dist目录不存在"
+          exit 1
+        fi
+        
+        echo "✅ 应用构建成功"
+        ls -la dist/
         
     - name: Create release zip
       run: |
+        echo "📦 创建发布zip文件..."
         cd dist
         zip -r "PDF书签生成器_${GITHUB_REF_NAME}_macOS.zip" "PDF书签生成器.app"
+        
+        # 验证zip文件
+        if [ ! -f "PDF书签生成器_${GITHUB_REF_NAME}_macOS.zip" ]; then
+          echo "❌ zip文件创建失败"
+          exit 1
+        fi
+        
+        echo "✅ zip文件创建成功"
+        ls -la "PDF书签生成器_${GITHUB_REF_NAME}_macOS.zip"
+        
+        # 返回项目根目录
+        cd ..
         
     - name: Get release notes
       id: get_release_notes
@@ -41,8 +100,10 @@ jobs:
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
           cat "docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          echo "📋 使用发布说明文件: docs/releases/RELEASE_NOTES_${GITHUB_REF_NAME}.md"
         else
           echo "RELEASE_NOTES=Release ${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          echo "⚠️ 未找到发布说明文件，使用默认说明"
         fi
         
     - name: Create Release
@@ -63,11 +124,20 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/PDF书签生成器_${{ github.ref_name }}_macOS.zip
+        asset_path: dist/PDF书签生成器_${{ github.ref_name }}_macOS.zip
         asset_name: PDF书签生成器_${{ github.ref_name }}_macOS.zip
         asset_content_type: application/zip
         
-    - name: Cleanup build files
+    - name: Verify upload
       run: |
+        echo "🔍 验证上传结果..."
+        echo "Release URL: ${{ steps.create_release.outputs.html_url }}"
+        echo "上传的zip文件: PDF书签生成器_${{ github.ref_name }}_macOS.zip"
+        
+    - name: Cleanup build files
+      if: always()
+      run: |
+        echo "🧹 清理构建文件..."
         rm -rf build dist __pycache__
         find . -name "*.pyc" -delete
+        echo "✅ 清理完成"
