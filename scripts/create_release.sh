@@ -60,7 +60,7 @@ fi
 
 # 生成发布说明
 if [ -z "$RELEASE_NOTES_FILE" ]; then
-    RELEASE_NOTES_FILE="RELEASE_NOTES_${VERSION}.md"
+    RELEASE_NOTES_FILE="docs/releases/RELEASE_NOTES_${VERSION}.md"
     
     if [ ! -f "$RELEASE_NOTES_FILE" ]; then
         echo -e "${YELLOW}未找到发布说明文件，从模板生成...${NC}"
@@ -74,6 +74,11 @@ if [ -z "$RELEASE_NOTES_FILE" ]; then
             echo -e "${RED}错误: 未找到模板文件 docs/releases/RELEASE_NOTES_TEMPLATE.md${NC}"
             exit 1
         fi
+    fi
+else
+    # 如果用户指定了相对路径，确保它在releases目录中
+    if [[ "$RELEASE_NOTES_FILE" != docs/releases/* ]]; then
+        RELEASE_NOTES_FILE="docs/releases/$RELEASE_NOTES_FILE"
     fi
 fi
 
